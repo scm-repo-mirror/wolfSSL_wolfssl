@@ -1488,6 +1488,9 @@ int wolfSSL_X509V3_EXT_print(WOLFSSL_BIO *out, WOLFSSL_X509_EXTENSION *ext,
     int tmpLen = 0;
     WOLFSSL_ENTER("wolfSSL_X509V3_EXT_print");
 
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
+
     if ((out == NULL) || (ext == NULL)) {
         WOLFSSL_MSG("NULL parameter error");
         return rc;
@@ -6099,6 +6102,10 @@ int wolfSSL_X509_cmp(const WOLFSSL_X509 *a, const WOLFSSL_X509 *b)
     #define MAX_WIDTH 80
 #endif
 
+#ifndef MAX_INDENT
+    #define MAX_INDENT 40
+#endif
+
 #define ACERT_NUM_DIR_TAGS 4
 
 /* Convenience struct and function for printing the Holder sub fields
@@ -6320,6 +6327,9 @@ static int X509PrintKeyUsage(WOLFSSL_BIO* bio, WOLFSSL_X509* x509, int indent)
         "Decipher Only"
     };
 
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
+
     if (bio == NULL || x509 == NULL) {
         ret = WOLFSSL_FAILURE;
     }
@@ -6491,6 +6501,9 @@ static int X509PrintSerial(WOLFSSL_BIO* bio, WOLFSSL_X509* x509, int indent)
     unsigned char serial[32];
     int  sz = sizeof(serial);
 
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
+
     XMEMSET(serial, 0, sz);
     if (wolfSSL_X509_get_serial_number(x509, serial, &sz) == WOLFSSL_SUCCESS) {
         X509PrintSerial_ex(bio, serial, sz, 1, indent);
@@ -6582,6 +6595,9 @@ static int X509PrintExtensions(WOLFSSL_BIO* bio, WOLFSSL_X509* x509, int indent)
     int scratchLen;
     int  count, i;
     char* buf = NULL;
+
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
 
     count = wolfSSL_X509_get_ext_count(x509);
     if (count <= 0)
@@ -6996,6 +7012,9 @@ static int X509PrintPubKey(WOLFSSL_BIO* bio, WOLFSSL_X509* x509, int indent)
     int len;
     int ret = WOLFSSL_SUCCESS;
 
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
+
     if (bio == NULL || x509 == NULL)
         return BAD_FUNC_ARG;
 
@@ -7083,6 +7102,9 @@ static int X509PrintVersion(WOLFSSL_BIO* bio, int version, int indent)
     char scratch[MAX_WIDTH];
     int scratchLen;
 
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
+
     scratchLen = XSNPRINTF(scratch, MAX_WIDTH, "%*s%s", indent, "", "Version:");
     if ((scratchLen < 0) || (scratchLen >= MAX_WIDTH)) {
         return WOLFSSL_FAILURE;
@@ -7115,6 +7137,9 @@ static int X509PrintReqAttributes(WOLFSSL_BIO* bio, WOLFSSL_X509* x509,
     char scratch[MAX_WIDTH];
     int scratchLen;
     int i = 0;
+
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
 
     if ((scratchLen = XSNPRINTF(scratch, MAX_WIDTH,
                                  "%*s%s", indent, "", "Attributes: \n"))
@@ -8863,6 +8888,9 @@ static int X509RevokedPrintSerial(WOLFSSL_BIO* bio, RevokedCert* rev,
     unsigned char serial[32];
     int  sz = sizeof(serial);
 
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
+
     XMEMSET(serial, 0, sz);
     if (wolfSSL_X509_REVOKED_get_serial_number(rev, serial, &sz)
             == WOLFSSL_SUCCESS) {
@@ -8921,8 +8949,11 @@ static int X509CRLPrintSignature(WOLFSSL_BIO* bio, WOLFSSL_X509_CRL* crl,
 static int X509CRLPrintExtensions(WOLFSSL_BIO* bio, WOLFSSL_X509_CRL* crl,
         int indent)
 {
-    char tmp[MAX_WIDTH]; /* buffer for XSNPRINTF */
+    char tmp[MAX_WIDTH];
     int  ret = 0;
+
+    if (indent < 0) indent = 0;
+    if (indent > MAX_INDENT) indent = MAX_INDENT;
 
     if (XSNPRINTF(tmp, MAX_WIDTH, "%*s%s\n", indent, "",
                 "CRL extensions:") >= MAX_WIDTH) {
